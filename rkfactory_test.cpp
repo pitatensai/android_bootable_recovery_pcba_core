@@ -23,6 +23,7 @@
 #include "udisk_test.h"
 #include "sdcard_test.h"
 #include "battery_test.h"
+#include "codec_test.h"
 #include "rkhal3_camera/camera_test.h"
 
 extern "C" {
@@ -155,6 +156,12 @@ int start_test_pthread(struct testcase_info *tc_info)
     } else if (!strcmp(tc_info->base_info->name, "camera")) {
         init_title_lines_for_testcase(tc_info->base_info->name, tc_info);
         std::thread *temp = new std::thread(&camera_test, tc_info, get_display_hook());
+        if (!temp) {
+            printf("create %s test thread error/n", tc_info->base_info->name);
+        }
+    } else if (!strcmp(tc_info->base_info->name, "Codec")) {
+        init_title_lines_for_testcase(tc_info->base_info->name, tc_info);
+        std::thread *temp = new std::thread(&codec_test, tc_info, get_display_hook());
         if (!temp) {
             printf("create %s test thread error/n", tc_info->base_info->name);
         }

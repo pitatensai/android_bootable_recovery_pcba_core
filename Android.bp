@@ -19,7 +19,7 @@ cc_library_static {
         "battery_test.cpp",
         "alsa_mixer.c",
         "alsa_pcm.c",
-        "codec_test.c",
+        "codec_test.cpp",
         "rkhal3_camera/camera_test.cpp",
     ],
 
