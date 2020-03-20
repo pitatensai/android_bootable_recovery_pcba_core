@@ -1,0 +1,62 @@
+cc_library_static {
+    name: "librkfactory_test",
+
+    defaults: [
+        "librecovery_defaults",
+    ],
+
+    srcs: [
+        "rkfactory_test.cpp",
+        "ddr_emmc_test.c",
+        "script.c",
+        "script_parser.c",
+        "wlan_test.cpp",
+        "rtc_test.cpp",
+        "gsensor_test.cpp",
+        "bt_test.cpp",
+        "udisk_test.cpp",
+        "sdcard_test.cpp",
+        "battery_test.cpp",
+        "alsa_mixer.c",
+        "alsa_pcm.c",
+        "codec_test.c",
+        "rkhal3_camera/camera_test.cpp",
+    ],
+
+    shared_libs: [
+        "android.hardware.health@2.0",
+        "libbase",
+        "libbootloader_message",
+        "libcrypto",
+        "libcutils",
+        "libfs_mgr",
+        "liblog",
+        "libziparchive",
+        "libcamera_metadata",
+    ],
+    cflags: [
+        "-Wno-error",
+    ],
+    static_libs: [
+        "libinstall",
+        "librecovery_fastboot",
+        "libminui",
+        "libotautil",
+        "libmtdutils",
+        "librkutility",
+        "librkupdate",
+        "librkwifi-ctrl-static",
+        "android.hardware.camera.common@1.0-helper",
+
+        // external dependencies
+        "libhealthhalutils",
+        "libfstab",
+    ],
+
+	export_include_dirs: [
+        "include",
+    ],
+
+    recovery_available: true,
+}
+
