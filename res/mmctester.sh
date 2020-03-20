@@ -1,40 +1,24 @@
 #!/system/bin/sh
 
 #source send_cmd_pipe.sh
-
-nr="0"
-mmcblk="/dev/block/mmcblk$nr"
-mmcp=$mmcblk
-
+ismount=0
 while true; do
-    while true; do
-        if [ -b "$mmcblk" ]; then
-            busybox  sleep 1
-            if [ -b "$mmcblk" ]; then
-                echo "card$nr insert"
-                break
-            fi
-        else
-            busybox sleep 1
-        fi
-    done
-
     if [ ! -d "/tmp/extsd" ]; then
         busybox mkdir -p /tmp/extsd
     fi
 
-    mmcp=$mmcblk
-    mount -t vfat $mmcp /tmp/extsd
-    if [ $? -ne 0 ]; then
-        mmcp=$mmcblk"p1"
+    for nr in 0 1 2 3 4 5 6;do
+        mmcblk="/dev/block/mmcblk$nr"
+        mmcp=$mmcblk
         mount -t vfat $mmcp /tmp/extsd
-        if [ $? -ne 0 ]; then
-            exit 0
-            busybox sleep 3
-            continue 2
+        if [ $? -eq 0 ]; then
+	    ismount=1
+            break
         fi
-    fi
-    break
+    done
+	if [ $ismount -eq 1 ]; then
+		break
+	fi
 done
 
 capacity=`df | grep "/tmp/extsd" | busybox awk '{printf $2}'`
