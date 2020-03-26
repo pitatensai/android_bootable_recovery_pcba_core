@@ -23,7 +23,7 @@
 #include "udisk_test.h"
 #include "sdcard_test.h"
 #include "battery_test.h"
-#include "codec_test.h"
+#include "audiodev_test/codec_test.h"
 #include "rkhal3_camera/camera_test.h"
 
 extern "C" {

@@ -17,10 +17,13 @@ cc_library_static {
         "udisk_test.cpp",
         "sdcard_test.cpp",
         "battery_test.cpp",
-        "alsa_mixer.c",
-        "alsa_pcm.c",
-        "codec_test.cpp",
         "rkhal3_camera/camera_test.cpp",
+        "audiodev_test/codec_test.cpp",
+        "audiodev_test/audio_hw.c",
+        "audiodev_test/alsa_route.c",
+        "audiodev_test/alsa_mixer.c",
+        "audiodev_test/tinyalsa/mixer.c",
+        "audiodev_test/tinyalsa/pcm.c",
     ],
 
     shared_libs: [
@@ -56,3 +59,27 @@ cc_library_static {
     recovery_available: true,
 }
 
+cc_binary {
+    name: "codec_test",
+    srcs: [
+        "audiodev_test/codec_main.cpp",
+        "audiodev_test/codec_test.cpp",
+        "audiodev_test/audio_hw.c",
+        "audiodev_test/alsa_route.c",
+        "audiodev_test/alsa_mixer.c",
+        "audiodev_test/tinyalsa/mixer.c",
+        "audiodev_test/tinyalsa/pcm.c",
+    ],
+    shared_libs: [
+        "android.hardware.health@2.0",
+        "libbase",
+        "libbootloader_message",
+        "libcrypto",
+        "libcutils",
+        "libfs_mgr",
+        "liblog",
+        "libziparchive",
+    ],
+    cflags: ["-Wno-error"],
+    recovery_available: true,
+}
