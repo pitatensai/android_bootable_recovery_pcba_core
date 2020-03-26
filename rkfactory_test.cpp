@@ -25,12 +25,12 @@
 #include "battery_test.h"
 #include "audiodev_test/codec_test.h"
 #include "rkhal3_camera/camera_test.h"
+#include "ddr_emmc_test.h"
 
 extern "C" {
     #include "script.h"
     #include "test_case.h"
     #include "script_parser.h"
-    #include "ddr_emmc_test.h"
 }
 
 static const std::vector<std::pair<std::string, Device::BuiltinAction>> rkFactoryMenuActions{
@@ -56,23 +56,29 @@ int simCounts = 2;
 
 RecoveryUI* pcba_ui;
 std::vector<std::string> pcba_title_lines;
-std::vector<bool> pcba_highlight_lines;
+std::vector<RecoveryUI::TestResultEnum> pcba_result_lines;
 
 void init_title_lines_for_testcase(const char *test_name, struct testcase_info *tc_info) {
     std::string *msg = new std::string();
     msg->append("Device ").append(test_name).append(":[...] {...}");
     pcba_title_lines.push_back(*msg);
-    pcba_highlight_lines.push_back(false);
+    pcba_result_lines.push_back(RecoveryUI::TestResultEnum::TESTING);
     // save index
     tc_info->y = pcba_title_lines.size() - 1;
 }
 
 void refresh_screen_hl_hook(int index, std::string msg, bool highlight) {
+    if (highlight) {
+        // Test failed
+        pcba_result_lines[index] = RecoveryUI::TestResultEnum::FAILED;
+    } else {
+        // Test passed
+        pcba_result_lines[index] = RecoveryUI::TestResultEnum::PASS;
+    }
     pcba_title_lines[index] = msg;
-    pcba_highlight_lines[index] = highlight;
     pcba_ui->ResetKeyInterruptStatus();
     pcba_ui->SetTitle(pcba_title_lines);
-    pcba_ui->SetTitleHighLight(pcba_highlight_lines);
+    pcba_ui->SetTitleResult(pcba_result_lines);
     pcba_ui->ShowText(true);
 }
 
@@ -80,7 +86,7 @@ void refresh_screen_hook(int index, std::string msg) {
     pcba_title_lines[index] = msg;
     pcba_ui->ResetKeyInterruptStatus();
     pcba_ui->SetTitle(pcba_title_lines);
-    pcba_ui->SetTitleHighLight(pcba_highlight_lines);
+    pcba_ui->SetTitleResult(pcba_result_lines);
     pcba_ui->ShowText(true);
 }
 
@@ -100,17 +106,21 @@ static struct list_head manual_test_list_head;
 
 int start_test_pthread(struct testcase_info *tc_info)
 {
-    char *display_string;
     printf("%s\n", tc_info->base_info->name);
-    if (!strcmp(tc_info->base_info->name, "ddr_emmc")) {
+    if (!strcmp(tc_info->base_info->name, "ddr")) {
         // emmc test
-        display_string = ddr_test();
-        pcba_title_lines.push_back(display_string);
-        pcba_highlight_lines.push_back(false);
+        init_title_lines_for_testcase(tc_info->base_info->name, tc_info);
+        std::thread *temp = new std::thread(&ddr_test, tc_info, get_display_hook());
+        if (!temp) {
+            printf("create %s test thread error/n", tc_info->base_info->name);
+        }
+    } else if (!strcmp(tc_info->base_info->name, "emmc")) {
         // flash_test
-        display_string = flash_test();
-        pcba_title_lines.push_back(display_string);
-        pcba_highlight_lines.push_back(false);
+        init_title_lines_for_testcase(tc_info->base_info->name, tc_info);
+        std::thread *temp = new std::thread(&flash_test, tc_info, get_display_hook());
+        if (!temp) {
+            printf("create %s test thread error/n", tc_info->base_info->name);
+        }
     } else if (!strcmp(tc_info->base_info->name, "wifi")) {
         init_title_lines_for_testcase(tc_info->base_info->name, tc_info);
         std::thread *temp = new std::thread(&wlan_test, tc_info, get_display_hook());
@@ -286,8 +296,9 @@ int RKFactory::StartFactorytest(Device* device) {
     pcba_ui = device->GetUI();
     pcba_ui->SetEnableTouchEvent(true, false);
     pcba_title_lines = { PCBA_VERSION_NAME};
+    pcba_result_lines.push_back(RecoveryUI::TestResultEnum::TESTING);
     pcba_title_lines.push_back("Serial number - " + android::base::GetProperty("ro.serialno", ""));
-    pcba_highlight_lines.push_back(false);
+    pcba_result_lines.push_back(RecoveryUI::TestResultEnum::TESTING);
 
     pcba_ui->ResetKeyInterruptStatus();
     pcba_ui->SetTitle(pcba_title_lines);
@@ -296,7 +307,7 @@ int RKFactory::StartFactorytest(Device* device) {
     INIT_LIST_HEAD(&manual_test_list_head);
     INIT_LIST_HEAD(&auto_test_list_head);
     pcba_title_lines.push_back("=======================================================");
-    pcba_highlight_lines.push_back(false);
+    pcba_result_lines.push_back(RecoveryUI::TestResultEnum::TESTING);
 
     pcba_ui->ResetKeyInterruptStatus();
     pcba_ui->SetTitle(pcba_title_lines);
@@ -325,7 +336,7 @@ int RKFactory::StartFactorytest(Device* device) {
 
     printf("manual testcase:\n");
     pcba_title_lines.push_back(PCBA_MANUAL_TEST);
-    pcba_highlight_lines.push_back(false);
+    pcba_result_lines.push_back(RecoveryUI::TestResultEnum::TESTING);
     list_for_each(pos, &manual_test_list_head) {
         struct testcase_info *tc_info =
         list_entry(pos, struct testcase_info, list);
@@ -333,9 +344,9 @@ int RKFactory::StartFactorytest(Device* device) {
     }
 
     pcba_title_lines.push_back("=======================================================");
-    pcba_highlight_lines.push_back(false);
+    pcba_result_lines.push_back(RecoveryUI::TestResultEnum::TESTING);
     pcba_title_lines.push_back(PCBA_AUTO_TEST);
-    pcba_highlight_lines.push_back(false);
+    pcba_result_lines.push_back(RecoveryUI::TestResultEnum::TESTING);
     pcba_ui->ResetKeyInterruptStatus();
     pcba_ui->SetTitle(pcba_title_lines);
     pcba_ui->ShowText(true);
@@ -349,7 +360,7 @@ int RKFactory::StartFactorytest(Device* device) {
 
     printf("pcba test over!\n");
     pcba_title_lines.push_back("=======================================================");
-    pcba_highlight_lines.push_back(false);
+    pcba_result_lines.push_back(RecoveryUI::TestResultEnum::TESTING);
     pcba_ui->ResetKeyInterruptStatus();
     pcba_ui->SetTitle(pcba_title_lines);
     pcba_ui->ShowText(true);

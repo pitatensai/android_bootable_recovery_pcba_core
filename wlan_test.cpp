@@ -211,7 +211,7 @@ void *wlan_test(void *argv, display_callback *hook)
     process_ssid(ssid, results, results2);
 
     snprintf(msg, sizeof(msg), "%s:[%s] %s", PCBA_WIFI, PCBA_SECCESS, ssid);
-    hook->handle_refresh_screen(tc_info->y, msg);
+    hook->handle_refresh_screen_hl(tc_info->y, msg, false);
     usleep(1000000);
     tc_info->result = 0;
 

@@ -127,7 +127,9 @@ void* gsensor_test(void *argv, display_callback *hook)
     int fps = android::base::GetIntProperty("ro.recovery.ui.animation_fps", 30);
 
     g_msg.y = tc_info->y;
-    hook->handle_refresh_screen(tc_info->y, "Device GSensor:[Testing ...]");
+    char msg[50];
+    snprintf(msg, sizeof(msg), "%s:[%s..]", PCBA_GSENSOR, PCBA_TESTING);
+    hook->handle_refresh_screen(tc_info->y, msg);
     tc_info->result = 0;
 
     fd = openInput("gsensor");
@@ -202,7 +204,7 @@ void* gsensor_test(void *argv, display_callback *hook)
             hook->handle_refresh_screen_hl(tc_info->y, current_data, !is_calibration);
         } else {
             snprintf(current_data, sizeof(current_data), "%s:[%s] { %4f %4f %4f }", PCBA_GSENSOR, PCBA_SECCESS, g_x, g_y, g_z);
-            hook->handle_refresh_screen(tc_info->y, current_data);
+            hook->handle_refresh_screen_hl(tc_info->y, current_data, false);
         }
         usleep((1 * 1000 * 1000)/fps);
     }
@@ -211,7 +213,8 @@ void* gsensor_test(void *argv, display_callback *hook)
     close(fd);
     close(fd_dev);
 
-    hook->handle_refresh_screen(tc_info->y, "Device GSensor:[Pass]");
+    snprintf(msg, sizeof(msg), "%s:[%s]", PCBA_GSENSOR, PCBA_SECCESS);
+    hook->handle_refresh_screen_hl(tc_info->y, msg, false);
     tc_info->result = 0;
     return argv;
 }

@@ -65,7 +65,7 @@ void *sdcard_test(void *argv, display_callback *hook)
         snprintf(failed_msg, sizeof(failed_msg), "%s:[%s] { %2fG }", 
                  PCBA_SDCARD, PCBA_SECCESS,
                  cap * 1.0 / 1024 / 1024);
-        hook->handle_refresh_screen(tc_info->y, failed_msg);
+        hook->handle_refresh_screen_hl(tc_info->y, failed_msg, false);
         tc_info->result = 0;
     }
     fclose(fp);

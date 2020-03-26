@@ -7,7 +7,7 @@ cc_library_static {
 
     srcs: [
         "rkfactory_test.cpp",
-        "ddr_emmc_test.c",
+        "ddr_emmc_test.cpp",
         "script.c",
         "script_parser.c",
         "wlan_test.cpp",

@@ -134,8 +134,10 @@ void *rtc_test(void *argc, display_callback *hook)
     struct timespec ts;
     struct rtc_time rtc;  
 
+    char msg[50];
+    snprintf(msg, sizeof(msg), "%s:[%s]", PCBA_RTC, PCBA_TESTING);
     y = tc_info->y;
-    hook->handle_refresh_screen(tc_info->y, "Device RTC:[Testing ...]");
+    hook->handle_refresh_screen(tc_info->y, msg);
     s = (char *)malloc(32);
     if (script_fetch("rtc", "module_args", (int *)dt, 8) == 0)
     strncpy(s, dt, 32);
@@ -183,7 +185,7 @@ void *rtc_test(void *argc, display_callback *hook)
                     (1900 + p->tm_year),
                     (1 + p->tm_mon), p->tm_mday,
                     p->tm_hour, p->tm_min, p->tm_sec);
-            hook->handle_refresh_screen(tc_info->y, current_time);
+            hook->handle_refresh_screen_hl(tc_info->y, current_time, false);
             usleep(1000000);
         }
     }
@@ -192,7 +194,8 @@ void *rtc_test(void *argc, display_callback *hook)
         tc_info->result = 0;
     } else {
         tc_info->result = -1;
-        hook->handle_refresh_screen_hl(tc_info->y, "Device RTC:[failed]", true);
+        snprintf(msg, sizeof(msg), "%s:[%s]", PCBA_RTC, PCBA_FAILED);
+        hook->handle_refresh_screen_hl(tc_info->y, msg, true);
     }
     return argc;
 }
