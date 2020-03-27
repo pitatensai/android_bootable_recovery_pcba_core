@@ -1098,7 +1098,7 @@ void ttytestThread()
     int i;
     system("echo 1 > /sys/class/rfkill/rfkill0/state");
     sleep(1);
-    get_tty_conf("/vendor/etc/bluetooth/bt_vendor.conf",ttyPort);
+    get_tty_conf("/pcba/bt_vendor.conf",ttyPort);
     if ((uart_fd = open(ttyPort, O_RDWR | O_NOCTTY | O_NONBLOCK)) == -1) {
         printf( "port could not be opened, error %d\n", errno);
     }
