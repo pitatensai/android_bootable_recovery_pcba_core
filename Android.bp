@@ -26,6 +26,7 @@ cc_library_static {
         "audiodev_test/tinyalsa/pcm.c",
     ],
 
+    local_include_dirs: ["audiodev_test/tinyalsa/include"],
     shared_libs: [
         "android.hardware.health@2.0",
         "libbase",
@@ -70,6 +71,7 @@ cc_binary {
         "audiodev_test/tinyalsa/mixer.c",
         "audiodev_test/tinyalsa/pcm.c",
     ],
+    local_include_dirs: ["audiodev_test/tinyalsa/include"],
     shared_libs: [
         "android.hardware.health@2.0",
         "libbase",
