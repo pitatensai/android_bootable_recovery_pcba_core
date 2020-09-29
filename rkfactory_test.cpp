@@ -294,6 +294,7 @@ int RKFactory::StartFactorytest(Device* device) {
     //char rfCalResult[10];
 
     pcba_ui = device->GetUI();
+    pcba_ui->SetRkFactoryStart(true);
     pcba_ui->SetEnableTouchEvent(true, false);
     pcba_title_lines = { PCBA_VERSION_NAME};
     pcba_result_lines.push_back(RecoveryUI::TestResultEnum::TESTING);
