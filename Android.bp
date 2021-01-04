@@ -3,6 +3,7 @@ cc_library_static {
 
     defaults: [
         "librecovery_defaults",
+	"librecovery_utils_defaults"
     ],
 
     srcs: [
@@ -35,8 +36,7 @@ cc_library_static {
         "libcutils",
         "libfs_mgr",
         "liblog",
-        "libziparchive",
-        "libcamera_metadata",
+        "libziparchive", 
     ],
     cflags: [
         "-Wno-error",
@@ -50,7 +50,7 @@ cc_library_static {
         "librkutility",
         "librkupdate",
         "librkwifi-ctrl-static",
-        "android.hardware.camera.common@1.0-helper",
+	"librecovery_utils",
 
         // external dependencies
         "libhealthhalutils",
