@@ -74,6 +74,8 @@ enum {
     FD_INIT = -1,
 };
 
+//#define RKISP_1 //for 3399/3288/3326/3368/3126c
+#define RKISP_2 //for 356x
 
 #define RK30_PLAT 1
 #define RK29_PLAT 0
@@ -731,8 +733,8 @@ void *camera_test(void *argc, display_callback *hook)
 
     strcpy(out_file, "/data/1.yuv");
     strcpy(dev_name, "/dev/video0");
-    width = 2112;
-    height = 1568;
+    width = 3264;
+    height = 2448;
 
     if (!strcmp(out_file, "-")) {
         fp = stdout;
@@ -741,25 +743,51 @@ void *camera_test(void *argc, display_callback *hook)
         perror("Creat file failed");
         exit(0);
     }
+
     //media-ctl setup links
+#ifdef RKISP_1
     err[0] = system("/system/bin/media-ctl -l '\"m00_b_ov13850 1-0010\":0->\"rockchip-mipi-dphy-rx\":0[1]'");
     err[0] = system("/system/bin/media-ctl -l '\"rockchip-mipi-dphy-rx\":1->\"rkisp1-isp-subdev\":0[1]'");
     err[0] = system("/system/bin/media-ctl -l '\"rkisp1-input-params\":0->\"rkisp1-isp-subdev\":1[1]'");
     err[0] = system("/system/bin/media-ctl -l '\"rkisp1-isp-subdev\":2->\"rkisp1_selfpath\":0[1]'");
     err[0] = system("/system/bin/media-ctl -l '\"rkisp1-isp-subdev\":2->\"rkisp1_mainpath\":0[1]'");
     err[0] = system("/system/bin/media-ctl -l '\"rkisp1-isp-subdev\":3->\"rkisp1-statistics\":0[1]'");
+#endif
+
+
+#ifdef RKISP_2
+    err[0] = system("/system/bin/media-ctl -l '\"m00_b_ov8858 2-0036\":0->\"rockchip-mipi-dphy-rx\":0[1]'");
+    err[0] = system("/system/bin/media-ctl -l '\"rockchip-mipi-dphy-rx\":1->\"rkisp-csi-subdev\":0[1]'");
+    err[0] = system("/system/bin/media-ctl -l '\"rkisp-csi-subdev\":1->\"rkisp-isp-subdev\":0[1]'");
+    err[0] = system("/system/bin/media-ctl -l '\"rkisp-csi-subdev\":2->\"rkisp_rawwr0\":0[1]'");
+    err[0] = system("/system/bin/media-ctl -l '\"rkisp-csi-subdev\":4->\"rkisp_rawwr2\":0[1]'");
+    err[0] = system("/system/bin/media-ctl -l '\"rkisp-csi-subdev\":5->\"rkisp_rawwr3\":0[1]'");
+    err[0] = system("/system/bin/media-ctl -l '\"rkisp-input-params\":0->\"rkisp-isp-subdev\":1[1]'");
+    err[0] = system("/system/bin/media-ctl -l '\"rkisp-isp-subdev\":2->\"rkisp_selfpath\":0[1]'");
+    err[0] = system("/system/bin/media-ctl -l '\"rkisp-isp-subdev\":2->\"rkisp_mainpath\":0[1]'");
+    err[0] = system("/system/bin/media-ctl -l '\"rkisp-isp-subdev\":3->\"rkisp-statistics\":0[1]'");
+#endif
 
     sleep(1);
 
     if (err[0]) goto end;
 
     //set v4l2 format / size and so on
+#ifdef RKISP_1
     err[0] = system("/system/bin/media-ctl --set-v4l2 '\"m00_b_ov13850 1-0010\":0[fmt:SBGGR10/2112x1568]'");
     err[0] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp1-isp-subdev\":0[fmt:SBGGR10/2112x1568]'");
     err[0] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp1-isp-subdev\":0[fmt:SBGGR10/2112x1568]' --set-v4l2 '\"rkisp1-isp-subdev\":0[crop:(0,0)/2112x1568]'");
     err[0] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp1-isp-subdev\":2[fmt:YUYV2X8/2112x1568]'");
     err[0] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp1-isp-subdev\":2[fmt:YUYV2X8/2112x1568]' --set-v4l2 '\"rkisp1-isp-subdev\":2[crop:(0,0)/2112x1568]'");
+#endif
 
+#ifdef RKISP_2
+    err[0] = system("/system/bin/media-ctl --set-v4l2 '\"m00_b_ov8858 2-0036\":0[fmt:SBGGR10/3264x2448]'"); 
+
+    err[0] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp-isp-subdev\":0[fmt:SBGGR10/3264x2448]'");
+
+    err[0] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp-isp-subdev\":0[crop:(0,0)/3264x2448]'"); 
+#endif
     sleep(1);
 
     if (err[0]) goto end;
@@ -788,8 +816,8 @@ void *camera_test(void *argc, display_callback *hook)
 
         strcpy(out_file, "/data/2.yuv");
         strcpy(dev_name, "/dev/video0");
-        width = 2112;
-        height = 1568;
+        width = 1600;
+        height = 1200;
 
         if (!strcmp(out_file, "-")) {
             fp = stdout;
@@ -799,24 +827,47 @@ void *camera_test(void *argc, display_callback *hook)
             exit(0);
         }
         //media-ctl setup links
+#ifdef RKISP_1
         err[1] = system("/system/bin/media-ctl -l '\"m00_b_ov13850 1-0010\":0->\"rockchip-mipi-dphy-rx\":0[1]'");
         err[1] = system("/system/bin/media-ctl -l '\"rockchip-mipi-dphy-rx\":1->\"rkisp1-isp-subdev\":0[1]'");
         err[1] = system("/system/bin/media-ctl -l '\"rkisp1-input-params\":0->\"rkisp1-isp-subdev\":1[1]'");
         err[1] = system("/system/bin/media-ctl -l '\"rkisp1-isp-subdev\":2->\"rkisp1_selfpath\":0[1]'");
         err[1] = system("/system/bin/media-ctl -l '\"rkisp1-isp-subdev\":2->\"rkisp1_mainpath\":0[1]'");
         err[1] = system("/system/bin/media-ctl -l '\"rkisp1-isp-subdev\":3->\"rkisp1-statistics\":0[1]'");
+#endif
 
+#ifdef RKISP_2
+        err[0] = system("/system/bin/media-ctl -l '\"m01_f_gc2385 2-0037\":0->\"rockchip-mipi-dphy-rx\":0[1]'");
+        err[0] = system("/system/bin/media-ctl -l '\"rockchip-mipi-dphy-rx\":1->\"rkisp-csi-subdev\":0[1]'");
+        err[0] = system("/system/bin/media-ctl -l '\"rkisp-csi-subdev\":1->\"rkisp-isp-subdev\":0[1]'");
+        err[0] = system("/system/bin/media-ctl -l '\"rkisp-csi-subdev\":2->\"rkisp_rawwr0\":0[1]'");
+        err[0] = system("/system/bin/media-ctl -l '\"rkisp-csi-subdev\":4->\"rkisp_rawwr2\":0[1]'");
+        err[0] = system("/system/bin/media-ctl -l '\"rkisp-csi-subdev\":5->\"rkisp_rawwr3\":0[1]'");
+        err[0] = system("/system/bin/media-ctl -l '\"rkisp-input-params\":0->\"rkisp-isp-subdev\":1[1]'");
+        err[0] = system("/system/bin/media-ctl -l '\"rkisp-isp-subdev\":2->\"rkisp_selfpath\":0[1]'");
+        err[0] = system("/system/bin/media-ctl -l '\"rkisp-isp-subdev\":2->\"rkisp_mainpath\":0[1]'");
+        err[0] = system("/system/bin/media-ctl -l '\"rkisp-isp-subdev\":3->\"rkisp-statistics\":0[1]'");
+#endif
         sleep(1);
 
         if (err[1]) goto end;
 
         //set v4l2 format / size and so on
+#ifdef RKISP_1
         err[1] = system("/system/bin/media-ctl --set-v4l2 '\"m00_b_ov13850 1-0010\":0[fmt:SBGGR10/2112x1568]'");
         err[1] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp1-isp-subdev\":0[fmt:SBGGR10/2112x1568]'");
         err[1] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp1-isp-subdev\":0[fmt:SBGGR10/2112x1568]' --set-v4l2 '\"rkisp1-isp-subdev\":0[crop:(0,0)/2112x1568]'");
         err[1] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp1-isp-subdev\":2[fmt:YUYV2X8/2112x1568]'");
         err[1] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp1-isp-subdev\":2[fmt:YUYV2X8/2112x1568]' --set-v4l2 '\"rkisp1-isp-subdev\":2[crop:(0,0)/2112x1568]'");
+#endif
 
+#ifdef RKISP_2
+        err[0] = system("/system/bin/media-ctl --set-v4l2 '\"m01_f_gc2385 2-0037\":0[fmt:SBGGR10/1600x1200]'"); 
+
+        err[0] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp-isp-subdev\":0[fmt:SBGGR10/1600x1200]'");
+
+        err[0] = system("/system/bin/media-ctl --set-v4l2 '\"rkisp-isp-subdev\":0[crop:(0,0)/1600x1200]'");
+#endif
         sleep(1);
 
         if (err[1]) goto end;
