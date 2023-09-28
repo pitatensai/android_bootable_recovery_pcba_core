@@ -8,13 +8,8 @@
 #include "Language/language.h"
 #include "ddr_emmc_test.h"
 
-#if defined(RK3399_PCBA) || defined(RK3368_PCBA) || defined(rk3326_PCBA)
-#define READ_DDR_COMMAND "cat /proc/zoneinfo | busybox grep present | \
-        busybox awk '{print $2}'"
-#else
-#define READ_DDR_COMMAND "cat /proc/zoneinfo | busybox grep present | \
-        busybox awk 'BEGIN{a=0}{a+=$2}END{print a}'"
-#endif
+#define READ_DDR_COMMAND "cat /proc/meminfo | grep MemTotal | cut -d ':' -f 2 | \
+	cut -d 'k' -f 1 | sed 's/ //g'"
 
 static char *emmc_path_name[] = {"/sys/block/rknand0/size",
                                  "/sys/bus/mmc/devices/mmc0:0001/block/mmcblk0/size",
@@ -95,13 +90,14 @@ void *ddr_test(void *argv, display_callback *hook)
     ddr_ret = ddr_exec(READ_DDR_COMMAND,
                        ddrsize_char, sizeof(ddrsize_char));
     if (ddr_ret >= 0) {
-        ddr_size = (int)(atoi(ddrsize_char)*4/1024);
+        ddr_size = (int)(atoi(ddrsize_char)/1024);
         printf("=========== ddr_zize is : %dGB==========\n",ddr_size);
         snprintf(out_string, sizeof(out_string), "%s:[%s] { %s:%dMB }",
                  PCBA_DDR_EMMC, PCBA_SECCESS,
                  PCBA_DDR, ddr_size);
         hook->handle_refresh_screen_hl(index, out_string, false);
     } else {
+        printf("=========== ddr_zize is : %dGB==========\n",ddr_size);
         snprintf(out_string, sizeof(out_string), "%s:[%s] { %s:%s }",
                  PCBA_DDR_EMMC, PCBA_FAILED,
                  PCBA_DDR, PCBA_FAILED);

@@ -4,13 +4,13 @@
 ismount=0
 while true; do
     if [ ! -d "/tmp/extsd" ]; then
-        busybox mkdir -p /tmp/extsd
+        mkdir -p /tmp/extsd
     fi
 
     for nr in 0 1 2 3 4 5 6;do
-        mmcblk="/dev/block/mmcblk$nr"
+        mmcblk="/dev/block/mmcblk0p$nr"
         mmcp=$mmcblk
-        mount -t vfat $mmcp /tmp/extsd
+        mount -t vfat $mmcp /tmp/extsd > /data/log.txt
         if [ $? -eq 0 ]; then
 	    ismount=1
             break
@@ -21,7 +21,7 @@ while true; do
 	fi
 done
 
-capacity=`df | grep "/tmp/extsd" | busybox awk '{printf $2}'`
+capacity=`df | grep /tmp/extsd |tr -s ' ' | cut -d ' ' -f 2`
 echo "$mmcp: $capacity"
 
 umount /tmp/extsd

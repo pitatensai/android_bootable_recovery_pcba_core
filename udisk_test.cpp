@@ -21,7 +21,7 @@ void * udisk_test(void * argv, display_callback *hook)
     char results[SCAN_RESULT_LENGTH];
 
     hook->handle_refresh_screen(tc_info->y, PCBA_UCARD);
-    ret =  system("busybox chmod 777 /pcba/udisktester.sh");
+    ret =  system("chmod 777 /pcba/udisktester.sh");
     if(ret) printf("chmod udisktester.sh failed :%d\n",ret);
 
     char failed_msg[50];

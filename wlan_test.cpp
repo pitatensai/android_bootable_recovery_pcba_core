@@ -180,7 +180,7 @@ void *wlan_test(void *argv, display_callback *hook)
         check_wifi_chip_type_string(wifi_type);
         save_wifi_chip_type(wifi_type);
     }
-    ret = system("busybox chmod 777 /pcba/wifi.sh");
+    ret = system("chmod 777 /pcba/wifi.sh");
     if (ret)
         LOG("chmod wifi.sh failed :%d\n", ret);
 

@@ -27,9 +27,9 @@ void *sdcard_test(void *argv, display_callback *hook)
     hook->handle_refresh_screen(tc_info->y, PCBA_SDCARD);
 
     #if defined(RK3288_PCBA)
-    ret = system("busybox chmod 777 /pcba/emmctester.sh");
+    ret = system("chmod 777 /pcba/emmctester.sh");
     #else
-    ret = system("busybox chmod 777 /pcba/mmctester.sh");
+    ret = system("chmod 777 /pcba/mmctester.sh");
     #endif
 
     if (ret) PLOG(ERROR) << "chmod mmctester.sh failed :" << ret;

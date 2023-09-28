@@ -27,68 +27,68 @@ android_kitkat=false
 
 jmax=3
 
-if busybox cat $chip_type_path | busybox grep AP; then
+if  cat $chip_type_path |  grep AP; then
   module_path=$module_path_bcmdhd
   chip_broadcom=true
   echo 1 > $pcba_node
 fi
 
-if busybox cat $chip_type_path | busybox grep RTL8188EU; then
+if  cat $chip_type_path |  grep RTL8188EU; then
   jmax=6
   module_path=$module_path_8188eu
 fi
 
-if busybox cat $chip_type_path | busybox grep RTL8723AU; then
+if  cat $chip_type_path |  grep RTL8723AU; then
   module_path=$module_path_8723bu
 fi
 
-if busybox cat $chip_type_path | busybox grep RTL8723BS; then
+if  cat $chip_type_path |  grep RTL8723BS; then
   module_path=$module_path_8723bs
 fi
 
-if busybox cat $chip_type_path | busybox grep RTL8723CS; then
+if  cat $chip_type_path |  grep RTL8723CS; then
   module_path=$module_path_8723cs
 fi
 
-if busybox cat $chip_type_path | busybox grep RTL8723DS; then
+if  cat $chip_type_path |  grep RTL8723DS; then
   module_path=$module_path_8723ds
 fi
 
-if busybox cat $chip_type_path | busybox grep RTL8188FU; then
+if  cat $chip_type_path |  grep RTL8188FU; then
   jmax=6
   module_path=$module_path_8188fu
 fi
 
-if busybox cat $chip_type_path | busybox grep RTL8822BS; then
+if  cat $chip_type_path |  grep RTL8822BS; then
   module_path=$module_path_8822bs
 fi
 
-if busybox cat $chip_type_path | busybox grep RTL8189ES; then
+if  cat $chip_type_path |  grep RTL8189ES; then
   module_path=$module_path_8189es
 fi
 
-if busybox cat $chip_type_path | busybox grep RTL8189FS; then
+if  cat $chip_type_path |  grep RTL8189FS; then
   module_path=$module_path_8189fs
 fi
 
-if busybox cat $version_path | busybox grep 3.0.36+; then
+if  cat $version_path |  grep 3.0.36+; then
   echo "kernel version 3.0.36+"
   if [ -e $module_path$version ]; then
     module_path=$module_path$version
   fi
 fi
 
-if busybox ls /dev/wmtWifi | busybox grep wmtWifi; then
+if  ls /dev/wmtWifi |  grep wmtWifi; then
   echo "mt5931_kitkat=true"
   mt5931_kitkat=true
 fi
 
-if busybox ifconfig wlan0; then
+if  ifconfig wlan0; then
   echo "android_kitkat=true"
   android_kitkat=true
 fi
 
-#if busybox ls $driver_node; then
+#if  ls $driver_node; then
 #  echo "wifi driver is buildin"
 #  driver_buildin=true
 #fi
@@ -122,11 +122,11 @@ do
     fi
 
     echo "sleep 3s"
-    busybox sleep 3
+     sleep 3
 
-    if busybox ifconfig wlan0; then
+    if  ifconfig wlan0; then
         if [ $interface_up = "true" ]; then
-            busybox ifconfig wlan0 up
+             ifconfig wlan0 up
         fi
         #if [ $? -ne 0 ]; then
         #    echo "ifconfig wlan0 up failed"
@@ -136,12 +136,12 @@ do
         iwlist wlan0 scanning > $result_file
         if [ $chip_broadcom = "true" ]; then
             echo "sleep 3s"
-            busybox sleep 3    
+             sleep 3    
         fi
-        iwlist wlan0 scanning last | busybox grep SSID > $result_file
-        busybox cat $result_file
-        iwlist wlan0 scanning last | busybox grep "Signal level" > $result_file2
-        busybox cat $result_file2
+        iwlist wlan0 scanning last |  grep SSID > $result_file
+         cat $result_file
+        iwlist wlan0 scanning last |  grep "Signal level" > $result_file2
+         cat $result_file2
         echo "success"
         exit 1
     fi
@@ -161,7 +161,7 @@ do
         fi
       fi
     fi
-    busybox sleep 1
+     sleep 1
     
     j=$((j+1))
 done

@@ -3,38 +3,37 @@
 #RESULT_FILE="/data/udisk_capacity.txt"
 #LOG_FILE="/data/udisk.log"
 #source send_cmd_pipe.sh
-
 #while true; do
 for nr in a b c d e f g h i j k l m n o p q r s t u v w x y z; do
     udisk="/dev/block/sd$nr"
     part=$udisk
 
-    echo "searching disk ..."
+    echo "searching disk ..." > /data/logs.txt
     while true; do
         if [ -b "$udisk" ]; then
-            busybox sleep 1
+            sleep 1
             if [ -b "$udisk" ]; then
-                echo "udisk insert"
+                echo "udisk insert" > /data/logs.txt
                 break;
             fi
         else
-            busybox sleep 1
+            sleep 1
         fi
     done
 
     if [ ! -d "/tmp/udisk" ]; then
-        busybox mkdir -p /tmp/udisk
+        mkdir -p /tmp/udisk
     fi
 
-    echo "mounting disk $udisk..."
+    echo "mounting disk $udisk..." > /data/logs.txt
     mount -t vfat $udisk /tmp/udisk
     if [ $? -ne 0 ]; then
         for num in 1 2 3 4 5 6;do
             udiskp=$udisk"$num"
-            echo "mounting disk $udiskp..."
+            echo "mounting disk $udiskp..." > /data/logs.txt
             mount -t vfat $udiskp /tmp/udisk
             if [ $? -ne 0 ]; then
-                echo "udisk mount failed"
+                echo "udisk mount failed" > /data/logs.txt
                 #SEND_CMD_PIPE_FAIL $3
                 #busybox sleep 3
                 # goto for nr in ...
@@ -54,7 +53,7 @@ for nr in a b c d e f g h i j k l m n o p q r s t u v w x y z; do
     fi
 done
 
-capacity=`df | grep /tmp/udisk | busybox awk '{printf $2}'`
+capacity=`df | grep /tmp/udisk |tr -s ' ' | cut -d ' ' -f 2`
 #echo "$part: $capacity" >> LOG_FILE
 
 umount /tmp/udisk
